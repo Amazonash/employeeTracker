@@ -1,20 +1,30 @@
 import React, {Component} from "react"
+import axios from "axios"
 
 
 
 class Employee extends Component {
 
     state = {
-        employees: [ {firstname: "Bob", lastname: "Saget"}, {firstname: "Kait", lastname: "User"}, {firstname: "Ashley", lastname: "G"}],
+        employees: [],
         searchTerm: "",
-        filteredEmployees:  [ {firstname: "Bob", lastname: "Saget"}, {firstname: "Kait", lastname: "User"}, {firstname: "Ashley", lastname: "G"}]
+        filteredEmployees:  []
+    }
+
+
+    componentDidMount() {
+        axios.get('https://randomuser.me/api/?results=20').then(users => {
+            console.log(users)
+            this.setState({employees: users.data.results})
+            this.setState({filteredEmployees: users.data.results})
+        })
     }
 
     sortBy = (sort) => {
 
         if (sort === "first") {
             let sortedArr = this.state.filteredEmployees.sort((a,b) => {
-              if (a.firstname > b.firstname) {
+              if (a.name.first > b.name.first) {
                   return 1
               } else {
                   return -1
@@ -25,7 +35,7 @@ class Employee extends Component {
 
         if (sort === "last") {
             let sortedArr = this.state.filteredEmployees.sort((a,b) => {
-              if (a.firstname < b.firstname) {
+              if (a.name.last < b.name.last) {
                   return 1
               } else {
                   return -1
@@ -56,8 +66,8 @@ class Employee extends Component {
         console.log(this.state.searchTerm)
 
         const filteredEmployesArr = this.state.filteredEmployees.filter(e => {
-            console.log(e.firstname.split(""))
-            return (e.firstname.includes(event.target.value)) || (e.lastname.includes(event.target.value))
+            console.log(e.name.first.split(""))
+            return (e.name.first.includes(event.target.value)) || (e.name.last.includes(event.target.value))
         })
 
         console.log(filteredEmployesArr)
@@ -81,11 +91,11 @@ class Employee extends Component {
                 >
                 </input>
                 <br></br>
-                <span onClick={() => this.sortBy("first")}>FIRST NAME</span> <span onClick={() => this.sortBy("last")}>LAST NAME</span>
+                <button onClick={() => this.sortBy("first")}>FIRST NAME</button> <button onClick={() => this.sortBy("last")}>LAST NAME</button>
                 {this.state.filteredEmployees.map( (e) => {
                     return (
                        <div>
-                    <span> {e.firstname}</span>  <span> {e.lastname}</span> 
+                    <span> {e.name.first}</span>  <span> {e.name.last}</span> 
                         </div>
                     )
                 })}
